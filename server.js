@@ -1,0 +1,42 @@
+'use strict';
+
+const WebSocketServer = require('websocket').server;
+const http = require('http');
+
+const server = http.createServer((request, response) => {
+    console.log((new Date()) + ' Received request for ' + request.url);
+    response.writeHead(404);
+    response.end();
+});
+
+const wsServer = new WebSocketServer({
+    httpServer: server,
+    autoAcceptConnections: false
+});
+
+let messageHistory = [];
+
+server.listen(3000, function() {
+    console.log('server up');
+});
+
+wsServer.on('request', (request) => {
+    const connection = request.accept('echo-protocol', request.origin);
+
+    console.log((new Date()) + ' Connection accepted.');
+    messageHistory.forEach((msg) => {
+      connection.sendUTF(msg);
+    });
+
+    connection.on('message', function(message) {
+        if (message.type === 'utf8') {
+            console.log('Received Message', message.utf8Data);
+            messageHistory.push(message.utf8Data);
+            wsServer.broadcast(message.utf8Data);
+        }
+    });
+
+    connection.on('close', function(reasonCode, description) {
+        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+    });
+});
