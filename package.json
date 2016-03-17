@@ -14,6 +14,7 @@
   "author": "Matias Klemola",
   "license": "MIT",
   "dependencies": {
+    "minimist": "^1.2.0",
     "websocket": "^1.0.22"
   }
 }

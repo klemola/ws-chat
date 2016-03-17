@@ -1,7 +1,9 @@
 #!/usr/bin/env node
+const argv = require('minimist')(process.argv.slice(2));
 const WebSocketClient = require('websocket').client;
 
 const client = new WebSocketClient();
+const userName = argv.username || 'TestClient';
 
 client.on('connectFailed', function(error) {
     console.log('Connect Error: ' + error.toString());
@@ -24,7 +26,7 @@ client.on('connect', function(connection) {
     (function sendMessage() {
         if (connection.connected) {
             const number = Math.round(Math.random() * 0xFFFFFF);
-            const msg = {content: number.toString(), sentOn: new Date().getTime(), sentBy: 'TestClient'};
+            const msg = {content: number.toString(), sentOn: new Date().getTime(), sentBy: userName};
             connection.sendUTF(JSON.stringify(msg));
             setTimeout(sendMessage, 10000);
         }
