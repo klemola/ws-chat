@@ -3,6 +3,7 @@
 const WebSocketServer = require('websocket').server;
 const http = require('http');
 
+const PORT = process.env.PORT || 5000;
 const server = http.createServer((request, response) => {
     console.log((new Date()) + ' Received request for ' + request.url);
     response.writeHead(404);
@@ -16,7 +17,7 @@ const wsServer = new WebSocketServer({
 
 let messageHistory = [];
 
-server.listen(3000, function() {
+server.listen(PORT, function() {
     console.log('server up');
 });
 
