@@ -4,6 +4,7 @@ const WebSocketServer = require('websocket').server;
 const http = require('http');
 
 const PORT = process.env.PORT || 5000;
+
 const server = http.createServer((request, response) => {
     console.log((new Date()) + ' Received request for ' + request.url);
     response.writeHead(404);
@@ -15,6 +16,12 @@ const wsServer = new WebSocketServer({
     autoAcceptConnections: false
 });
 
+const greeting = {
+  content: 'Welcome to Convo Supreme 😎',
+  sentOn: new Date().getTime(),
+  sentBy: 'Server'
+};
+
 let messageHistory = [];
 
 server.listen(PORT, function() {
@@ -25,6 +32,7 @@ wsServer.on('request', (request) => {
     const connection = request.accept('echo-protocol', request.origin);
 
     console.log((new Date()) + ' Connection accepted.');
+    connection.sendUTF(JSON.stringify(greeting));
     messageHistory.forEach((msg) => {
       connection.sendUTF(msg);
     });
