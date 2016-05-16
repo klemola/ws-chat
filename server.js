@@ -1,7 +1,7 @@
 'use strict';
 
 const WebSocketServer = require('websocket').server;
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 const crypto = require('crypto');
 
@@ -26,13 +26,10 @@ function upgrade(request, socket) {
       socket.write(sResponse,'ascii');
 }
 
-const httpsServer = https.createServer({
-  key: fs.readFileSync('cert/key.pem'),
-  cert: fs.readFileSync('cert/cert.pem'),
-}, handler);
+const httpServer = http.createServer(handler);
 
 const wsServer = new WebSocketServer({
-    httpServer: httpsServer,
+    httpServer: httpServer,
     autoAcceptConnections: false
 });
 
@@ -44,9 +41,9 @@ const greeting = {
 
 let messageHistory = [];
 
-httpsServer.onupgrade = upgrade;
-httpsServer.listen(PORT, function() {
-  console.log('HTTPS server up');
+httpServer.onupgrade = upgrade;
+httpServer.listen(PORT, function() {
+  console.log('Server up');
 });
 
 wsServer.on('request', (request) => {
